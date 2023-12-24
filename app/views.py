@@ -7,10 +7,15 @@ def sighup(request):
 def login(request):
     return render(request,"app/Login.html")
 def index(request):
-    imagekey=request.session['id']
-    images=UploadedImage.objects.filter(imagekey=imagekey)
-    return render(request,"app/Index.html",{'key':images})
-
+        try:
+            imagekey=request.session['id']
+            images=UploadedImage.objects.filter(imagekey=imagekey)
+        except:
+            return render(request,"app/Index.html")
+            
+        imagekey=request.session['id']
+        images=UploadedImage.objects.filter(imagekey=imagekey)
+        return render(request,"app/Index.html",{'key':images})
 def validatesighup(request):
     if request.method=="POST":
         fname=request.POST['fname']
