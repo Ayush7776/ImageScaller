@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bootstrap demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+  </head>
+  <body>
+<div class="container mt-3">
+      <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-lg-start">
+        <a href="/" class="d-flex align-items-center mb-2 mb-lg-0 text-dark text-decoration-none">
+          <svg class="bi me-2" width="40" height="32" role="img" aria-label="Bootstrap"><use xlink:href="#bootstrap"></use></svg>
+        </a>
+
+        <ul class="nav col-12 col-lg-auto me-lg-auto mb-2 justify-content-center mb-md-0">
+          <li><a href="#" class="nav-link px-2 text-secondary">Home</a></li>
+          {% if request.session.id != None %}
+          <li><a href="{% url 'uploadpage' %}" class="nav-link px-2 text-dark">Uplode Images</a></li>
+          {% endif %}
+        </ul>
+
+        <form class="col-12 col-lg-auto mb-3 mb-lg-0 me-lg-3" role="search">
+          <input type="search" class="form-control" placeholder="Search..." aria-label="Search">
+        </form>
+
+        <div class="text-end">
+          {% if request.session.id != None %}
+          {{request.session.firstname}} {{request.session.lastname}}
+          <a type="button" href="{% url 'logout' %}" class="btn btn-warning mx-2 btn-sm ">Log-out</a>
+          {% else %}
+          <a type="button" href="{% url 'sighup' %}" class="btn btn-warning btn-sm ">Sign-up</a>
+          <a type="button" href="{% url 'login' %}" class="btn btn-outline-dark me-2 btn-sm">Login</a>
+          {% endif %}
+        </div>
+      </div>
+
+
+    </div>
+    {% if key %}
+      {% for i in key %}
+        <img src="{{MEDIA_URL}}{{i.image.url}}" height="200px" width="200px">
+      {% endfor %}
+    {% endif %}
+    <img src="" alt="">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+  </body>
+</html>
