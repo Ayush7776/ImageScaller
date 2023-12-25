@@ -72,7 +72,41 @@ def uploadimg(request):
         insert=UploadedImage.objects.create(imagekey=can,image=image)
         return redirect('index')
 
-# def ImageFetch(request):
-    # imagekey=request.session['id']
-    # images=UploadedImage.objects.all()
-    # return render(request,"app/Index.html",{'key':images})
+def AdminLoginPage(request):
+    return render(request,"app/admin.html")
+
+def AdminLogin(request):
+    if request.method=="POST":
+        username=request.POST['username']
+        password=request.POST['password']
+
+        if username=="admin" and password=="123":
+            user=Student.objects.all()
+            return render(request,"app/adminCotrolls.html",{'user':user})
+        else:
+            msg="Please Login Using Correct Credetials"
+            return render(request,"app/admin.html",{'msg':msg})
+            
+def EditPage(request,pk):
+    getdata=Student.objects.get(id=pk)
+    getimages=UploadedImage.objects.filter(imagekey=pk)
+    return render(request,"app/Edit.html",{'key2':getdata,'images':getimages})
+
+def UpdateData(request,pk):
+    udata=Student.objects.get(id=pk)
+    udata.FirstName=request.POST['fname']
+    udata.LastName=request.POST['lname']
+    udata.Email=request.POST['email']
+    udata.Phone=request.POST['contact']
+    udata.save()
+    return redirect('AdminLoginPage')
+
+def DeleteData(request,pk):
+    deletedata=Student.objects.get(id=pk)
+    deletedata.delete()
+    return redirect('AdminLoginPage')
+
+def DeleteImg(request,pk):
+    deletedata=UploadedImage.objects.get(id=pk)
+    deletedata.delete()
+    return redirect('AdminLoginPage')

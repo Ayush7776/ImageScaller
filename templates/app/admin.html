@@ -8,14 +8,14 @@
 </head>
 <body>
     <center>
-        <h1>Login Window</h1>
+        <h1>Admin Controlls</h1>
         <h4>{{msg}}</h4>
-        <form action="{% url 'validatelogin' %}" method="post">
+        <form action="{% url 'AdminLogin' %}" method="post">
             {% csrf_token %}
             <table>
                 <tr>
-                    <td>Email</td>
-                    <td><input type="email" name="email"></td>
+                    <td>UserName</td>
+                    <td><input type="text" name="username"></td>
                 </tr>
                 <tr>
                     <td>PassWord</td>
@@ -23,7 +23,6 @@
                 </tr>
                 <tr>
                     <td><input type="submit" name="submit" value="Login"></td>
-                    <a href="{% url 'AdminLoginPage' %}">Admin Site</a>
                 </tr>
             </table>
         </form>
