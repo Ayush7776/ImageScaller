@@ -1,6 +1,13 @@
 from django.shortcuts import render,redirect
 from django.http import HttpResponse
 from .models import *
+from rest_framework import status
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import RefreshToken
+from .serializers import UserSerializer
+
 
 def sighup(request):
     return render(request,"app/Sighnup.html")
@@ -16,49 +23,46 @@ def index(request):
         imagekey=request.session['id']
         images=UploadedImage.objects.filter(imagekey=imagekey)
         return render(request,"app/Index.html",{'key':images})
-def validatesighup(request):
-    if request.method=="POST":
-        fname=request.POST['fname']
-        lname=request.POST['lname']
-        email=request.POST['email']
-        phone=request.POST['phone']
-        password=request.POST['password']
-        cpassword=request.POST['cpassword']
-        
-        user=Student.objects.filter(Email=email)
-        if user:
-            msg="User Allready Exiests..!"
-            return render(request,"app/Sighnup.html",{'msg':msg})
-            
-        if password==cpassword:
-            newuser=Student.objects.create(FirstName=fname,LastName=lname,Email=email,Phone=phone,Password=password)
-            msg="Your Account Has Been Created Please Login With Credentials"
-            return render(request,"app/Login.html",{'msg':msg})
-        else:
-            msg="PassWord Or Confirm PassWord Does Not Match..!"
-            return render(request,"app/Sighnup.html",{'msg':msg})
 
-def validatelogin(request):
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def registration_view(request):
+    serializer = UserSerializer(data=request.data)
+    if serializer.is_valid():
+        user = serializer.save()
+        refresh = RefreshToken.for_user(user)
+        msg="Your Account Has Been Created Please Login With Credentials"
+        return render(request,"app/Login.html",{'msg':msg})
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def login_view(request):
     if request.method=="POST":
         email=request.POST['email']
         password=request.POST['password']
-        user=Student.objects.get(Email=email)
+        try:
+            user=Student.objects.get(Email=email,Password=password)
+        except:
+            msg="Please Login Using Correct Credetials"
+            return render(request,"app/Login.html",{'msg':msg})
+        
+        user=Student.objects.get(Email=email,Password=password)
         if user:
             request.session['id']=user.id
             request.session['firstname']=user.FirstName
             request.session['lastname']=user.LastName
             request.session['email']=user.Email
             return redirect('index')
-        else:
-            msg="Please Login Using Correct Credetials"
-            return redirect('sighup')
+           
 
 def logout(request):
     del request.session['id']
     del request.session['firstname']
     del request.session['lastname']
     del request.session['email']
-    return redirect('login')
+    return render(request,"app/Login.html")
 
 def uploadpage(request):
     return render(request,"app/upload.html")
