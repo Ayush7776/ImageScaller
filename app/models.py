@@ -14,6 +14,7 @@ class Student(models.Model):
 class UploadedImage(models.Model):
     imagekey=models.ForeignKey(Student,on_delete=models.CASCADE)
     image = models.ImageField(upload_to='uploads/')
+    caption=models.TextField(max_length="20",default="Wow")
 
     def save(self, *args, **kwargs):
         if self.image:

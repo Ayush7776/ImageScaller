@@ -13,6 +13,12 @@ def sighup(request):
     return render(request,"app/Sighnup.html")
 def login(request):
     return render(request,"app/Login.html")
+def videos(request):
+    return render(request,"app/videos.html")
+def about(request):
+    return render(request,"app/about.html")
+def contact(request):
+    return render(request,"app/contact.html")
 def index(request):
         try:
             imagekey=request.session['id']
@@ -72,13 +78,13 @@ def uploadimg(request):
         id=request.session['id']
         can=Student.objects.get(id=id)
         image=request.FILES['image']
+        caption=request.POST['caption']
         imagekey=request.session['id']
-        insert=UploadedImage.objects.create(imagekey=can,image=image)
+        insert=UploadedImage.objects.create(imagekey=can,image=image,caption=caption)
         return redirect('index')
 
 def AdminLoginPage(request):
-    return render(request,"app/admin.html")
-
+        return render(request,"app/admin.html")
 def AdminLogin(request):
     if request.method=="POST":
         username=request.POST['username']
@@ -102,6 +108,7 @@ def UpdateData(request,pk):
     udata.LastName=request.POST['lname']
     udata.Email=request.POST['email']
     udata.Phone=request.POST['contact']
+    udata.Password=request.POST['password']
     udata.save()
     return redirect('AdminLoginPage')
 

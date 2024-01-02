@@ -3,6 +3,9 @@ from django.urls import path,include
 from app import views
 urlpatterns = [
    path('',views.index,name="index"),
+   path('videos',views.videos,name="videos"),
+   path('about',views.about,name="about"),
+   path('contact',views.contact,name="contact"),
    path('login',views.login,name="login"),
    path('register/', views.registration_view, name='register'),
    path('loginview/', views.login_view, name='loginview'),
