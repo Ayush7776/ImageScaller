@@ -8,7 +8,7 @@ class Student(models.Model):
     LastName=models.CharField(max_length=50)
     Email=models.EmailField(max_length=50)
     Phone=models.BigIntegerField()
-    Password=models.CharField(max_length=50,default="")
+    Password=models.CharField(max_length=50,default="",)
 
 
 class UploadedImage(models.Model):

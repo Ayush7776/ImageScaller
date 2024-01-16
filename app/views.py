@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from .models import *
 from rest_framework import status
 from rest_framework.decorators import api_view, permission_classes
-from rest_framework.permissions import AllowAny
+from rest_framework.permissions import IsAuthenticated ,AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 from .serializers import UserSerializer
@@ -32,7 +32,7 @@ def index(request):
 
 
 @api_view(['POST'])
-@permission_classes([AllowAny])
+@permission_classes([[AllowAny]])
 def registration_view(request):
     serializer = UserSerializer(data=request.data)
     if serializer.is_valid():
@@ -40,7 +40,7 @@ def registration_view(request):
         refresh = RefreshToken.for_user(user)
         msg="Your Account Has Been Created Please Login With Credentials"
         return render(request,"app/Login.html",{'msg':msg})
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return render(request,"app/Sighnup.html",{'msg':serializer.errors})
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -70,9 +70,6 @@ def logout(request):
     del request.session['email']
     return render(request,"app/Login.html")
 
-def uploadpage(request):
-    return render(request,"app/upload.html")
-
 def uploadimg(request):
     if request.method=="POST":
         id=request.session['id']
@@ -84,25 +81,47 @@ def uploadimg(request):
         return redirect('index')
 
 def AdminLoginPage(request):
+    try:
+        request.session['admin']
+        request.session['apassword']
+    except:
         return render(request,"app/admin.html")
+    user=Student.objects.all()
+    return render(request,"app/adminCotrolls.html",{'user':user}) 
 def AdminLogin(request):
     if request.method=="POST":
         username=request.POST['username']
         password=request.POST['password']
 
         if username=="admin" and password=="123":
+            request.session['admin']=username
+            request.session['apassword']=password
             user=Student.objects.all()
             return render(request,"app/adminCotrolls.html",{'user':user})
         else:
             msg="Please Login Using Correct Credetials"
             return render(request,"app/admin.html",{'msg':msg})
-            
+
+def AdminLogout(request):
+    del request.session['admin']
+    del request.session['apassword']
+    return render(request,"app/Login.html")          
 def EditPage(request,pk):
+    try:
+        request.session['admin']
+        request.session['apassword']
+    except:
+        return render(request,"app/admin.html")
     getdata=Student.objects.get(id=pk)
     getimages=UploadedImage.objects.filter(imagekey=pk)
     return render(request,"app/Edit.html",{'key2':getdata,'images':getimages})
 
 def UpdateData(request,pk):
+    try:
+        request.session['admin']
+        request.session['apassword']
+    except:
+        return render(request,"app/admin.html")
     udata=Student.objects.get(id=pk)
     udata.FirstName=request.POST['fname']
     udata.LastName=request.POST['lname']
@@ -113,11 +132,22 @@ def UpdateData(request,pk):
     return redirect('AdminLoginPage')
 
 def DeleteData(request,pk):
+    try:
+        request.session['admin']
+        request.session['apassword']
+    except:
+        return render(request,"app/admin.html")
     deletedata=Student.objects.get(id=pk)
     deletedata.delete()
     return redirect('AdminLoginPage')
 
 def DeleteImg(request,pk):
+    try:
+        request.session['admin']
+        request.session['apassword']
+    except:
+        return render(request,"app/admin.html")
+    print(pk)
     deletedata=UploadedImage.objects.get(id=pk)
     deletedata.delete()
     return redirect('AdminLoginPage')
